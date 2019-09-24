@@ -12,7 +12,6 @@ module.exports = (client) => {
     url = 'https://api.canonn.tech'
   }
 
-
   // CAPIv2 Basic commands
   client.capiVersion = async () => {
     try {
@@ -22,5 +21,29 @@ module.exports = (client) => {
     } catch (error) {
       console.log(error);
     }
+  },
+
+  client.capiGetReport = async () => {
+    // Get a single report
+  },
+
+  client.capiGetReportCount = async () => {
+    // Get a count of reports based on reportStatus
+  },
+
+  client.getTypes = async () => {
+    // Get all types for a site type
+  },
+
+  client.capiGetSite = async () => {
+    // Get a single site
+  },
+
+  client.capiGetSiteCount = async () => {
+    // Get a count of sites based on types
+  },
+
+  client.capiGetCmdrCount = async() => {
+    // Get a count of all CMDRs
   }
 };
