@@ -15,31 +15,40 @@ module.exports = (client) => {
   // CAPIv2 Basic commands
   client.capiVersion = async () => {
     try {
-      const response = await fetch(url + '/info')
+      const response = await fetch(url + '/info');
       const json = await response.json();
       return json;
     } catch (error) {
+      client.logger.error('Fetch Error: ' + error );
       console.log(error);
     }
   },
 
-  client.capiGetReport = async () => {
-    // Get a single report
+  // Get a single report
+  client.capiGetReport = async (reportType, reportID) => {
+    try {
+      const response = await fetch(url + `/${reportType}reports/${reportID}`);
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      client.logger.error('Fetch Error: ' + error );
+      console.log(error);
+    }
   },
 
-  client.capiGetReportCount = async () => {
+  client.capiGetReportCount = async (reportType) => {
     // Get a count of reports based on reportStatus
   },
 
-  client.getTypes = async () => {
+  client.getTypes = async (siteType) => {
     // Get all types for a site type
   },
 
-  client.capiGetSite = async () => {
+  client.capiGetSite = async (siteType, siteID, rawSiteID = null) => {
     // Get a single site
   },
 
-  client.capiGetSiteCount = async () => {
+  client.capiGetSiteCount = async (siteType) => {
     // Get a count of sites based on types
   },
 
