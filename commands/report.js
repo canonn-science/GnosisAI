@@ -38,7 +38,7 @@ exports.run = async (client, message, args, level) => { // eslint-disable-line n
     } else if (reportData.statusCode && reportData.statusCode > 404) {
       msg.edit('Server Error, unable to contact the Gnosis data stores');
     } else {
-      msg.edit(`= ${request[0].toUpperCase()} Report: ${request[1]} =
+      msg.edit(`= ${approvedReportTypes[request[0]]} Report: ${request[1]} =
 • System  :: ${reportData.systemName.toUpperCase()}
 • Body    :: ${reportData.bodyName.toUpperCase()}
 • CMDR    :: ${reportData.cmdrName}
@@ -64,5 +64,5 @@ exports.help = {
   name: "report",
   category: "Canonn Reports",
   description: "Checking the status of a report by it\'s id",
-  usage: "report"
+  usage: "!report ap7"
 };

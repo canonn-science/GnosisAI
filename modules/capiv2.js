@@ -36,8 +36,24 @@ module.exports = (client) => {
     }
   },
 
-  client.capiGetReportCount = async (reportType) => {
+  client.capiGetReportCount = async (reportType, reportStatus = null) => {
     // Get a count of reports based on reportStatus
+
+    var reportUrl;
+    if (reportStatus === 'total') {
+      reportUrl = url + `/${reportType}reports/count`;
+    } else {
+      reportUrl = url + `/${reportType}reports/count?reportStatus=` + encodeURIComponent(reportStatus);
+    }
+
+    try {
+      const response = await fetch(reportUrl);
+      const count = await response.text();
+      return Number(count);
+    } catch (error) {
+      client.logger.error('Fetch Error: ' + error );
+      console.log(error);
+    }
   },
 
   client.getTypes = async (siteType) => {
