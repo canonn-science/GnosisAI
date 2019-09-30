@@ -12,6 +12,42 @@ module.exports = (client) => {
     url = 'https://api.canonn.tech'
   }
 
+  client.reportTypes = () => {
+    
+    let types = {
+      ap: 'Amphora Plant',
+      bm: 'Bark Mound',
+      bt: 'Brain Tree',
+      cs: 'Crystalline Shard',
+      fg: 'Fungal Gourd',
+      fm: 'Fumarole',
+      gv: 'Gas Vent',
+      gy: 'Geyser',
+      ls: 'Lava Spout',
+      tb: 'Thargoid Barnacle',
+      tw: 'Tube Worm',
+    }
+
+    return types
+  },
+  
+  additionalTypes = {
+    gen: 'Generation Ship',
+    gb: 'Guardian Beacon',
+    gr: 'Guardian Ruin',
+    gs: 'Guardian Structure',
+    ts: 'Thargoid Structure'
+  },
+
+  client.siteTypes = () => {
+    let types = {
+      ...client.reportTypes(),
+      ...additionalTypes
+    }
+
+    return types
+  },
+
   // CAPIv2 Basic commands
   client.capiVersion = async () => {
     try {

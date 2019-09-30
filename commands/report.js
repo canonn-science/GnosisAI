@@ -4,19 +4,7 @@ const Discord = require('discord.js');
 exports.run = async (client, message, args, level) => {
 	// eslint-disable-line no-unused-vars
 
-	approvedReportTypes = {
-		ap: 'Amphora Plant',
-		bm: 'Bark Mound',
-		bt: 'Brain Tree',
-		cs: 'Crystalline Shard',
-		fg: 'Fungal Gourd',
-		fm: 'Fumarole',
-		gv: 'Gas Vent',
-		gy: 'Geyser',
-		ls: 'Lava Spout',
-		tb: 'Thargoid Barnacle',
-		tw: 'Tube Worm',
-	};
+	approvedReportTypes = client.reportTypes();
 
 	reportKeys = Object.keys(approvedReportTypes);
 
@@ -25,6 +13,7 @@ exports.run = async (client, message, args, level) => {
 		message.channel.send("Sorry but I don't know what report type " + request[0].toUpperCase() + ' is.');
 	} else {
 		let reportData = await client.capiGetReport(request[0], request[1]);
+		console.log(reportData);
 
 		var siteID;
 		if (reportData.site) {
