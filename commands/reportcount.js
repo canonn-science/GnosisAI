@@ -3,28 +3,26 @@ const moment = require('moment');
 exports.run = async (client, message, args, level) => {
 	// eslint-disable-line no-unused-vars
 
-	acceptedReportTypes = ['ap', 'bm', 'bt', 'cs', 'fg', 'fm', 'gv', 'gy', 'ls', 'tb', 'tw'];
-
-	const msg = await message.channel.send('Getting counts...');
+	let counts = {
+		ap: {},
+		bm: {},
+		bt: {},
+		cs: {},
+		fg: {},
+		fm: {},
+		gv: {},
+		gy: {},
+		ls: {},
+		tb: {},
+		tw: {},
+	};
+	
+	let countKeys = Object.keys(counts);
 
 	if (args.length === 0) {
 		// All site counts
 
-		let counts = {
-			ap: {},
-			bm: {},
-			bt: {},
-			cs: {},
-			fg: {},
-			fm: {},
-			gv: {},
-			gy: {},
-			ls: {},
-			tb: {},
-			tw: {},
-    };
-    
-    let countKeys = Object.keys(counts);
+		const msg = await message.channel.send('Getting counts...');
 
     for (let i = 0; i < countKeys.length; i++) {
       counts[countKeys[i]].total = await client.capiGetReportCount(countKeys[i], 'total');
@@ -40,7 +38,8 @@ exports.run = async (client, message, args, level) => {
 
 		msg.edit(
       `= All Report Counts by Status =
-Total | Pending | Accepted | Duplicate\n
+Total | Pending | Accepted | Duplicate
+
 • AP :: ${counts.ap.total}, ${counts.ap.pending}, ${counts.ap.accepted}, ${counts.ap.duplicate} 
 • BM :: ${counts.bm.total}, ${counts.bm.pending}, ${counts.bm.accepted}, ${counts.bm.duplicate}
 • BT :: ${counts.bt.total}, ${counts.bt.pending}, ${counts.bt.accepted}, ${counts.bt.duplicate} 
@@ -56,13 +55,36 @@ Total | Pending | Accepted | Duplicate\n
 Total Reports: ${reportTotal}
     `, { code: 'asciidoc' }
 		);
+	} else if (args.length === 1 && countKeys.includes(args[0].toLowerCase()) === true) {
+		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()}...`);
+
+		let searchKey = countKeys.indexOf(args[0].toLowerCase());
+
+		counts[countKeys[searchKey]].total = await client.capiGetReportCount(countKeys[searchKey], 'total');
+		counts[countKeys[searchKey]].pending = await client.capiGetReportCount(countKeys[searchKey], 'pending');
+		counts[countKeys[searchKey]].accepted = await client.capiGetReportCount(countKeys[searchKey], 'accepted');
+		counts[countKeys[searchKey]].duplicate = await client.capiGetReportCount(countKeys[searchKey], 'duplicate');
+
+		msg.edit(`= ${args[0].toUpperCase()} Report Counts by Status =
+
+• Total :: ${counts[countKeys[searchKey]].total}
+• Pending :: ${counts[countKeys[searchKey]].pending}
+• Accepted :: ${counts[countKeys[searchKey]].accepted}
+• Duplicate :: ${counts[countKeys[searchKey]].duplicate}
+		`, { code: 'asciidoc' }
+		);
+	} else if (args.length >= 2) {
+		message.channel.send('Sorry you can only do all reports or a single report type\n Example: \`!reportcount\n\` Example: \`!reportcount AP\`');
+	} else {
+		message.channel.send('Sorry I didn\'t understand the type of report you wanted to check');
+		client.logger.log(`Unkown Report Type ${args[0]}`, 'warn');
 	}
 };
 
 exports.conf = {
 	enabled: true,
 	guildOnly: false,
-	aliases: ['rpct', 'rptct'],
+	aliases: ['rpct', 'rptct', 'reportc', 'rc'],
 	permLevel: 'User',
 };
 
@@ -70,5 +92,5 @@ exports.help = {
 	name: 'reportcount',
 	category: 'Canonn Reports',
 	description: 'Grabbing a count of reports based on their status',
-	usage: '!reportcount || !reportcount ap [pending]',
+	usage: '!reportcount || !reportcount ap',
 };

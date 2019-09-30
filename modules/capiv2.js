@@ -64,8 +64,24 @@ module.exports = (client) => {
     // Get a single site
   },
 
-  client.capiGetSiteCount = async (siteType) => {
+  client.capiGetSiteCount = async (siteType, type = null) => {
     // Get a count of sites based on types
+
+    var reportUrl;
+    if (type === 'all') {
+      reportUrl = url + `/${siteType}sites/count`;
+    } else {
+      reportUrl = url + `/${siteType}sites/count?type.type=` + encodeURIComponent(type);
+    }
+
+    try {
+      const response = await fetch(reportUrl);
+      const count = await response.text();
+      return Number(count);
+    } catch (error) {
+      client.logger.error('Fetch Error: ' + error );
+      console.log(error);
+    }
   },
 
   client.capiGetCmdrCount = async() => {
