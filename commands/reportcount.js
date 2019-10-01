@@ -1,4 +1,5 @@
-const moment = require('moment');
+const Discord = require('discord.js');
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 exports.run = async (client, message, args, level) => {
 	// eslint-disable-line no-unused-vars
@@ -24,6 +25,9 @@ exports.run = async (client, message, args, level) => {
 	// Grab Report Status array
 	let reportStatuses = client.reportStatus();
 
+	// Grab Report Types Object and map keys
+	let reportTypes = client.reportTypes();
+
 	// Quick function to grab all data
 	async function getAllCounts() {
 		for (let i = 0; i < countKeys.length; i++) {
@@ -31,8 +35,12 @@ exports.run = async (client, message, args, level) => {
 
 			for (let c = 0; c < reportStatuses.length; c++) {
 				let reportKey = counts[countKeys[i]];
-				reportKey[reportStatuses[c]] = await client.capiGetReportCount(countKeys[i], reportStatuses[c]);
+				let newCount = await client.capiGetReportCount(countKeys[i], reportStatuses[c]);
+				if (newCount >= 1) {
+					reportKey[reportStatuses[c]] = newCount
+				}
 			}
+			delay(250);
 		}
 	}
 
@@ -46,13 +54,77 @@ exports.run = async (client, message, args, level) => {
 		}
 	}
 
-	console.log(args);
+	let embedData = {
+		title: '= Canonn Report Counts =',
+		color: 14323987,
+		footer: {
+			icon_url: 'https://api.canonn.tech/uploads/40bfc7d870e54925ad0f769e7b0b1f9a.png',
+			text: 'Provided by Canonn R&D - (canonn.science)',
+		},
+		fields: [],
+	};
+
+	let discordEmbed = new Discord.RichEmbed(embedData);
+
+	function object2string(obj) {
+		let string = '';
+
+		function toTitleCase(str) {
+			return str.toLowerCase().replace(/\.\s*([a-z])|^[a-z]/gm, s => s.toUpperCase());
+		}
+
+		Object.keys(obj).forEach(key => {
+			string += `**${toTitleCase(key)}**: ${obj[key]}\n`;
+		});
+		return string;
+	}
+
 	if (args.length === 0) {
+		const msg = await message.channel.send('Getting counts of all reports with all statuses...');
+
 		await getAllCounts();
-		console.log(counts);
+
+		let reportTotal = 0
+		for (let i=0; i < countKeys.length; i++) {
+			reportTotal = (reportTotal + counts[countKeys[i]].total);
+		}
+
+		let reportPending = 0
+		for (let i=0; i < countKeys.length; i++) {
+			if (counts[countKeys[i]].pending) {
+				reportPending = (reportPending + counts[countKeys[i]].pending);
+			}
+		}
+
+		embedData.fields.push({
+			name: '-- **Total Reports** --',
+			value: `**Total**: ${reportTotal}\n\
+			**Pending**: ${reportPending}`,
+			inline: false,
+		});
+
+		for (let i = 0; i < countKeys.length; i++) {
+			embedData.fields.push({
+				name: `-- **(${countKeys[i].toUpperCase()})** - ${reportTypes[countKeys[i].toLowerCase()]} Reports --`,
+				value: object2string(counts[countKeys[i]]),
+				inline: false,
+			});
+		}
+
+		msg.edit(discordEmbed);
 	} else if (args.length === 1 && countKeys.includes(args[0].toLowerCase()) === true) {
+		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} \
+		reports with all statuses...`);
+
 		await getTypeCount(args[0].toLowerCase());
-		console.log(counts);
+
+		embedData.fields.push({
+			name: `-- (${args[0].toUpperCase()}) - ${reportTypes[args[0].toLowerCase()]} Reports --`,
+			value: object2string(counts[args[0].toLowerCase()]),
+			inline: false,
+		});
+
+		msg.edit(discordEmbed);
 	} else if (
 		args.length === 2 &&
 		countKeys.includes(args[0].toLowerCase()) === true &&
