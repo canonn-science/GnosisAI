@@ -8,12 +8,15 @@ exports.run = async (client, message, args, level) => {
 
 	reportKeys = Object.keys(approvedReportTypes);
 
+	if (args[1]) {
+		args[0] = args[0] + args[1];
+		args[0] = args[0].replace(/\s/g, '');
+	}
 	let request = args[0].match(/[a-zA-Z]+|[0-9]+(?:\.[0-9]+)?|\.[0-9]+/g);
 	if (reportKeys.includes(request[0].toLowerCase()) === false) {
 		message.channel.send("Sorry but I don't know what report type " + request[0].toUpperCase() + ' is.');
 	} else {
 		let reportData = await client.capiGetReport(request[0], request[1]);
-		console.log(reportData);
 
 		var siteID;
 		if (reportData.site) {
@@ -31,9 +34,9 @@ exports.run = async (client, message, args, level) => {
 		} else {
 			discordEmbed = new Discord.RichEmbed({
 				color: 14323987,
-				thumbnail: {
-					url: 'https://api.canonn.tech/uploads/e8d4ccacb513432683f65d445ce87f8e.png',
-				},
+				// thumbnail: {
+				// 	url: 'https://api.canonn.tech/uploads/e8d4ccacb513432683f65d445ce87f8e.png',
+				// },
 				footer: {
 					icon_url: 'https://api.canonn.tech/uploads/40bfc7d870e54925ad0f769e7b0b1f9a.png',
 					text: 'Provided by Canonn R&D (canonn.science)',
