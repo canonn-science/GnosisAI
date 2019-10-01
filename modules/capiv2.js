@@ -48,6 +48,18 @@ module.exports = (client) => {
     return types
   },
 
+  client.reportStatus = () => {
+    let status = [
+      'pending',
+      'updated',
+      'accepted',
+      'declined',
+      'issue',
+      'duplicate'
+    ]
+
+    return status
+  }
   // CAPIv2 Basic commands
   client.capiVersion = async () => {
     try {
@@ -85,7 +97,7 @@ module.exports = (client) => {
     try {
       const response = await fetch(reportUrl);
       const count = await response.text();
-      return Number(count);
+      return await Number(count);
     } catch (error) {
       client.logger.error('Fetch Error: ' + error );
       console.log(error);

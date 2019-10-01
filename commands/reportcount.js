@@ -3,6 +3,7 @@ const moment = require('moment');
 exports.run = async (client, message, args, level) => {
 	// eslint-disable-line no-unused-vars
 
+	// Define count object for data
 	let counts = {
 		ap: {},
 		bm: {},
@@ -16,68 +17,50 @@ exports.run = async (client, message, args, level) => {
 		tb: {},
 		tw: {},
 	};
-	
+
+	// Grab array of keys
 	let countKeys = Object.keys(counts);
 
+	// Grab Report Status array
+	let reportStatuses = client.reportStatus();
+
+	// Quick function to grab all data
+	async function getAllCounts() {
+		for (let i = 0; i < countKeys.length; i++) {
+			counts[countKeys[i]].total = await client.capiGetReportCount(countKeys[i], 'total');
+
+			for (let c = 0; c < reportStatuses.length; c++) {
+				let reportKey = counts[countKeys[i]];
+				reportKey[reportStatuses[c]] = await client.capiGetReportCount(countKeys[i], reportStatuses[c]);
+			}
+		}
+	}
+
+	// Grab all report Status data on a single type
+	async function getTypeCount(reportType) {
+		counts[reportType].total = await client.capiGetReportCount(reportType, 'total');
+
+		for (let c = 0; c < reportStatuses.length; c++) {
+			let reportKey = counts[reportType];
+			reportKey[reportStatuses[c]] = await client.capiGetReportCount(reportType, reportStatuses[c]);
+		}
+	}
+
+	console.log(args);
 	if (args.length === 0) {
-		// All site counts
-
-		const msg = await message.channel.send('Getting counts...');
-
-    for (let i = 0; i < countKeys.length; i++) {
-      counts[countKeys[i]].total = await client.capiGetReportCount(countKeys[i], 'total');
-      counts[countKeys[i]].pending = await client.capiGetReportCount(countKeys[i], 'pending');
-      counts[countKeys[i]].accepted = await client.capiGetReportCount(countKeys[i], 'accepted');
-      counts[countKeys[i]].duplicate = await client.capiGetReportCount(countKeys[i], 'duplicate');
-    };
-
-    let reportTotal = 0;
-    for (let i = 0; i < countKeys.length; i++) {
-      reportTotal = (reportTotal + counts[countKeys[i]].total);
-    };
-
-		msg.edit(
-      `= All Report Counts by Status =
-Total | Pending | Accepted | Duplicate
-
-• AP :: ${counts.ap.total}, ${counts.ap.pending}, ${counts.ap.accepted}, ${counts.ap.duplicate} 
-• BM :: ${counts.bm.total}, ${counts.bm.pending}, ${counts.bm.accepted}, ${counts.bm.duplicate}
-• BT :: ${counts.bt.total}, ${counts.bt.pending}, ${counts.bt.accepted}, ${counts.bt.duplicate} 
-• CS :: ${counts.cs.total}, ${counts.cs.pending}, ${counts.cs.accepted}, ${counts.cs.duplicate} 
-• FG :: ${counts.fg.total}, ${counts.fg.pending}, ${counts.fg.accepted}, ${counts.fg.duplicate} 
-• FM :: ${counts.fm.total}, ${counts.fm.pending}, ${counts.fm.accepted}, ${counts.fm.duplicate} 
-• GV :: ${counts.gv.total}, ${counts.gv.pending}, ${counts.gv.accepted}, ${counts.gv.duplicate} 
-• GY :: ${counts.gy.total}, ${counts.gy.pending}, ${counts.gy.accepted}, ${counts.gy.duplicate} 
-• LS :: ${counts.ls.total}, ${counts.ls.pending}, ${counts.ls.accepted}, ${counts.ls.duplicate} 
-• TB :: ${counts.tb.total}, ${counts.tb.pending}, ${counts.tb.accepted}, ${counts.tb.duplicate} 
-• TW :: ${counts.tw.total}, ${counts.tw.pending}, ${counts.tw.accepted}, ${counts.tw.duplicate}
-
-Total Reports: ${reportTotal}
-    `, { code: 'asciidoc' }
-		);
+		await getAllCounts();
+		console.log(counts);
 	} else if (args.length === 1 && countKeys.includes(args[0].toLowerCase()) === true) {
-		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()}...`);
-
-		let searchKey = countKeys.indexOf(args[0].toLowerCase());
-
-		counts[countKeys[searchKey]].total = await client.capiGetReportCount(countKeys[searchKey], 'total');
-		counts[countKeys[searchKey]].pending = await client.capiGetReportCount(countKeys[searchKey], 'pending');
-		counts[countKeys[searchKey]].accepted = await client.capiGetReportCount(countKeys[searchKey], 'accepted');
-		counts[countKeys[searchKey]].duplicate = await client.capiGetReportCount(countKeys[searchKey], 'duplicate');
-
-		msg.edit(`= ${args[0].toUpperCase()} Report Counts by Status =
-
-• Total :: ${counts[countKeys[searchKey]].total}
-• Pending :: ${counts[countKeys[searchKey]].pending}
-• Accepted :: ${counts[countKeys[searchKey]].accepted}
-• Duplicate :: ${counts[countKeys[searchKey]].duplicate}
-		`, { code: 'asciidoc' }
-		);
-	} else if (args.length >= 2) {
-		message.channel.send('Sorry you can only do all reports or a single report type\n Example: \`!reportcount\n\` Example: \`!reportcount AP\`');
+		await getTypeCount(args[0].toLowerCase());
+		console.log(counts);
+	} else if (
+		args.length === 2 &&
+		countKeys.includes(args[0].toLowerCase()) === true &&
+		reportStatuses.includes(args[1].toLowerCase() === true)
+	) {
+	} else if (countKeys.includes(args[0].toLowerCase()) === false) {
+	} else if (reportStatuses.includes(args[1].toLowerCase()) === false) {
 	} else {
-		message.channel.send('Sorry I didn\'t understand the type of report you wanted to check');
-		client.logger.log(`Unkown Report Type ${args[0]}`, 'warn');
 	}
 };
 
@@ -92,5 +75,5 @@ exports.help = {
 	name: 'reportcount',
 	category: 'Canonn Reports',
 	description: 'Grabbing a count of reports based on their status',
-	usage: '!reportcount || !reportcount ap',
+	usage: '!reportcount || !reportcount ap || !reportcount ap pending',
 };
