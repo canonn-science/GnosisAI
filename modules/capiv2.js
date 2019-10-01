@@ -15,8 +15,8 @@ module.exports = client => {
 	// Script Function to fetch and retry x times if error
 	fetch_retry = async (retryCount, url, options = {}) => {
 		try {
-      let data = await fetch(url, options);
-				return data;
+			let data = await fetch(url, options);
+			return data;
 		} catch (error) {
 			if (retryCount <= 1) console.log(error);
 			await delay(500);
@@ -95,7 +95,7 @@ module.exports = client => {
 
 			try {
 				const response = await fetch_retry(5, reportUrl, {});
-        const count = await response.text();
+				const count = await response.text();
 				return await Number(count);
 			} catch (error) {
 				client.logger.error('Fetch Error: ' + error);

@@ -2,8 +2,6 @@ const Discord = require('discord.js');
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
 exports.run = async (client, message, args, level) => {
-	// eslint-disable-line no-unused-vars
-
 	// Define count object for data
 	let counts = {
 		ap: {},
@@ -37,7 +35,7 @@ exports.run = async (client, message, args, level) => {
 				let reportKey = counts[countKeys[i]];
 				let newCount = await client.capiGetReportCount(countKeys[i], reportStatuses[c]);
 				if (newCount >= 1) {
-					reportKey[reportStatuses[c]] = newCount
+					reportKey[reportStatuses[c]] = newCount;
 				}
 			}
 			delay(250);
@@ -80,19 +78,20 @@ exports.run = async (client, message, args, level) => {
 	}
 
 	if (args.length === 0) {
+		console.log('TEST1');
 		const msg = await message.channel.send('Getting counts of all reports with all statuses...');
 
 		await getAllCounts();
 
-		let reportTotal = 0
-		for (let i=0; i < countKeys.length; i++) {
-			reportTotal = (reportTotal + counts[countKeys[i]].total);
+		let reportTotal = 0;
+		for (let i = 0; i < countKeys.length; i++) {
+			reportTotal = reportTotal + counts[countKeys[i]].total;
 		}
 
-		let reportPending = 0
-		for (let i=0; i < countKeys.length; i++) {
+		let reportPending = 0;
+		for (let i = 0; i < countKeys.length; i++) {
 			if (counts[countKeys[i]].pending) {
-				reportPending = (reportPending + counts[countKeys[i]].pending);
+				reportPending = reportPending + counts[countKeys[i]].pending;
 			}
 		}
 
@@ -113,6 +112,7 @@ exports.run = async (client, message, args, level) => {
 
 		msg.edit(discordEmbed);
 	} else if (args.length === 1 && countKeys.includes(args[0].toLowerCase()) === true) {
+		console.log('TEST2');
 		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} \
 		reports with all statuses...`);
 
@@ -128,11 +128,36 @@ exports.run = async (client, message, args, level) => {
 	} else if (
 		args.length === 2 &&
 		countKeys.includes(args[0].toLowerCase()) === true &&
-		reportStatuses.includes(args[1].toLowerCase() === true)
+		(reportStatuses.includes(args[1].toLowerCase()) === true || args[1].toLowerCase() === 'total')
 	) {
+		console.log('TEST3');
+		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} \
+		reports with ${args[1].toLowerCase()} status...`);
+
+		let reportKey = counts[args[0].toLowerCase()];
+		if (args[0].toLowerCase() !== 'total') {
+			reportKey[args[1].toLowerCase()] = await client.capiGetReportCount(
+				args[0].toLowerCase(),
+				args[1].toLowerCase()
+			);
+		} else {
+			reportKey[args[1].toLowerCase()] = await client.capiGetReportCount(args[0].toLowerCase(), 'total');
+		}
+
+		embedData.fields.push({
+			name: `-- (${args[0].toUpperCase()}) - ${reportTypes[args[0].toLowerCase()]} Reports --`,
+			value: object2string(counts[args[0].toLowerCase()]),
+			inline: false,
+		});
+
+		msg.edit(discordEmbed);
 	} else if (countKeys.includes(args[0].toLowerCase()) === false) {
+		message.channel.send(`The report type ${args[0].toUpperCase()} is not valid.`);
 	} else if (reportStatuses.includes(args[1].toLowerCase()) === false) {
+		message.channel.send(`The report status ${args[1].toLowerCase()} is not valid.`);
 	} else {
+		message.channel.send('An unknown error occured, this has been reported');
+		client.logger('Reportcount command error: ' + args, 'error');
 	}
 };
 
