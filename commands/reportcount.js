@@ -78,7 +78,6 @@ exports.run = async (client, message, args, level) => {
 	}
 
 	if (args.length === 0) {
-		console.log('TEST1');
 		const msg = await message.channel.send('Getting counts of all reports with all statuses...');
 
 		await getAllCounts();
@@ -112,7 +111,6 @@ exports.run = async (client, message, args, level) => {
 
 		msg.edit(discordEmbed);
 	} else if (args.length === 1 && countKeys.includes(args[0].toLowerCase()) === true) {
-		console.log('TEST2');
 		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} \
 		reports with all statuses...`);
 
@@ -130,7 +128,6 @@ exports.run = async (client, message, args, level) => {
 		countKeys.includes(args[0].toLowerCase()) === true &&
 		(reportStatuses.includes(args[1].toLowerCase()) === true || args[1].toLowerCase() === 'total')
 	) {
-		console.log('TEST3');
 		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} \
 		reports with ${args[1].toLowerCase()} status...`);
 
