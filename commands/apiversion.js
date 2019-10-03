@@ -3,8 +3,6 @@ const Discord = require('discord.js');
 exports.run = async (client, message, args, level) => { // eslint-disable-line no-unused-vars
   const msg = await message.channel.send('Fetching CAPIv2 Version...');
 
-  console.log(message);
-
 	let embedData = {
 		color: 14323987,
     thumbnail: {
