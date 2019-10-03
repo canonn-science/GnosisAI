@@ -34,7 +34,7 @@ exports.run = async (client, message, args, level) => {
 			if (siteImage[request[0]] === '') {
 				thumbnail = 'https://api.canonn.tech/uploads/bb866ea7470648de88d09c125f8718c4.png'
 			} else {
-				thumbnail = siteImage[request[0]];
+				thumbnail = siteImage[request[0].toLowerCase()];
 			}
 
 			discordEmbed = new Discord.RichEmbed({
@@ -48,7 +48,7 @@ exports.run = async (client, message, args, level) => {
 				},
 				fields: [
 					{
-						name: `== **${approvedSiteTypes[request[0]]}** Site: ${request[1]} ==`,
+						name: `== **${approvedSiteTypes[request[0].toLowerCase()]}** Site: ${request[1]} ==`,
 						value: `**Site ID**: ${request[0].toUpperCase()}${siteData[0].siteID}
 						**System**: ${siteData[0].system.systemName.toUpperCase()}
             **Body**: ${siteData[0].body.bodyName.toUpperCase()}
