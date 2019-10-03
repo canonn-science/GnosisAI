@@ -32,18 +32,28 @@ exports.run = async (client, message, args, level) => {
 		} else if (reportData.statusCode && reportData.statusCode > 404) {
 			msg.edit('Server Error, unable to contact the Gnosis data stores');
 		} else {
+
+			let reportImage = await client.siteImages();
+
+			var thumbnail;
+			if (reportImage[request[0]] === '') {
+				thumbnail = 'https://api.canonn.tech/uploads/bb866ea7470648de88d09c125f8718c4.png'
+			} else {
+				thumbnail = reportImage[request[0]];
+			}
+
 			discordEmbed = new Discord.RichEmbed({
 				color: 14323987,
-				// thumbnail: {
-				// 	url: 'https://api.canonn.tech/uploads/e8d4ccacb513432683f65d445ce87f8e.png',
-				// },
+				thumbnail: {
+					url: thumbnail,
+				},
 				footer: {
 					icon_url: 'https://api.canonn.tech/uploads/40bfc7d870e54925ad0f769e7b0b1f9a.png',
 					text: 'Provided by Canonn R&D (canonn.science)',
 				},
 				fields: [
 					{
-						name: `__**${approvedReportTypes[request[0]]} Report: ${request[1]}**__`,
+						name: `== **${approvedReportTypes[request[0]]}** Report: ${request[1]} ==`,
 						value: `**System**: ${reportData.systemName.toUpperCase()}
             **Body**: ${reportData.bodyName.toUpperCase()}
             **Latitude**: ${reportData.latitude.toFixed(2)}

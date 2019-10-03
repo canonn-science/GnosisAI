@@ -18,7 +18,7 @@ fetch_retry = async (retryCount, url, options = {}) => {
 		return data;
 	} catch (error) {
 		if (retryCount <= 1) console.log(error);
-		await delay(500);
+		await delay(250);
 		return await fetch_retry(url, options, retryCount - 1);
 	}
 };
@@ -136,8 +136,25 @@ module.exports = client => {
 		// Get all types for a site type
 	};
 
+	// Get a single site
 	client.capiGetSite = async (siteType, siteID, rawSiteID = null) => {
-		// Get a single site
+		var siteUrl;
+		if (siteType === 'raw' && rawSiteID) {
+			siteURL = url + `/${siteType}sites/${rawSiteID}`
+		} else {
+			siteUrl = url + `/${siteType}sites?siteID=${siteID}`
+		}
+
+		try {
+			const response = await fetch_retry(5, siteUrl, {});
+			const json = await response.json();
+			if (!json[0].discoveredBy) {json[0].discoveredBy = {cmdrName: 'Unknown'}};
+			if (!json[0].frontierID) {json[0].frontierID = 'Unknown'};
+			return json;
+		} catch (error) {
+			client.logger.error('Fetch Error: ' + error);
+			console.log(error);
+		}
 	};
 
 	// Get a count of sites based on types

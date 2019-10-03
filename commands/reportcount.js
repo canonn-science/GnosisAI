@@ -80,39 +80,40 @@ exports.run = async (client, message, args, level) => {
 	if (args.length === 0) {
 		const msg = await message.channel.send('Getting counts of all reports with all statuses...');
 
-		await getAllCounts();
+		msg.edit('Sorry this command has been disabled temporarly please search for a specific type. Ex: !rc ap or !rc total')
 
-		let reportTotal = 0;
-		for (let i = 0; i < countKeys.length; i++) {
-			reportTotal = reportTotal + counts[countKeys[i]].total;
-		}
+		// await getAllCounts();
 
-		let reportPending = 0;
-		for (let i = 0; i < countKeys.length; i++) {
-			if (counts[countKeys[i]].pending) {
-				reportPending = reportPending + counts[countKeys[i]].pending;
-			}
-		}
+		// let reportTotal = 0;
+		// for (let i = 0; i < countKeys.length; i++) {
+		// 	reportTotal = reportTotal + counts[countKeys[i]].total;
+		// }
 
-		embedData.fields.push({
-			name: '-- **Total Reports** --',
-			value: `**Total**: ${reportTotal}\n\
-			**Pending**: ${reportPending}`,
-			inline: false,
-		});
+		// let reportPending = 0;
+		// for (let i = 0; i < countKeys.length; i++) {
+		// 	if (counts[countKeys[i]].pending) {
+		// 		reportPending = reportPending + counts[countKeys[i]].pending;
+		// 	}
+		// }
 
-		for (let i = 0; i < countKeys.length; i++) {
-			embedData.fields.push({
-				name: `-- **(${countKeys[i].toUpperCase()})** - ${reportTypes[countKeys[i].toLowerCase()]} Reports --`,
-				value: object2string(counts[countKeys[i]]),
-				inline: false,
-			});
-		}
+		// embedData.fields.push({
+		// 	name: '-- **Total Reports** --',
+		// 	value: `**Total**: ${reportTotal}\n\
+		// 	**Pending**: ${reportPending}`,
+		// 	inline: false,
+		// });
 
-		msg.edit(discordEmbed);
+		// for (let i = 0; i < countKeys.length; i++) {
+		// 	embedData.fields.push({
+		// 		name: `-- **(${countKeys[i].toUpperCase()})** - ${reportTypes[countKeys[i].toLowerCase()]} Reports --`,
+		// 		value: object2string(counts[countKeys[i]]),
+		// 		inline: false,
+		// 	});
+		// }
+
+		// msg.edit(discordEmbed);
 	} else if (args.length === 1 && countKeys.includes(args[0].toLowerCase()) === true) {
-		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} \
-		reports with all statuses...`);
+		const msg = await message.channel.send(`Getting counts of ${args[0].toUpperCase()} reports with all statuses...`);
 
 		await getTypeCount(args[0].toLowerCase());
 
@@ -144,6 +145,31 @@ exports.run = async (client, message, args, level) => {
 		embedData.fields.push({
 			name: `-- (${args[0].toUpperCase()}) - ${reportTypes[args[0].toLowerCase()]} Reports --`,
 			value: object2string(counts[args[0].toLowerCase()]),
+			inline: false,
+		});
+
+		msg.edit(discordEmbed);
+	} else if (args.length === 1 && args[0] === 'total') {
+		const msg = await message.channel.send('Getting Total Counts...');
+
+		let totalCount = 0;
+		let pendingCount = 0;
+		let acceptedCount = 0;
+		let issueCount = 0;
+			for (let i = 0; i < countKeys.length; i++) {
+				totalCount = (totalCount +await client.capiGetReportCount(countKeys[i], 'total'));
+				pendingCount = (pendingCount +await client.capiGetReportCount(countKeys[i], 'pending'));
+				acceptedCount = (acceptedCount +await client.capiGetReportCount(countKeys[i], 'accepted'));
+				issueCount = (issueCount +await client.capiGetReportCount(countKeys[i], 'issue'));
+				delay(250);
+			}
+
+		embedData.fields.push({
+			name: '-- **Total Reports** --',
+			value: `**Total**: ${totalCount}
+			**Pending**: ${pendingCount}
+			**Accepted**: ${acceptedCount}
+			**Issue**: ${issueCount}`,
 			inline: false,
 		});
 
