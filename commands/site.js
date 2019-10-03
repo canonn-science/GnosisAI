@@ -24,7 +24,8 @@ exports.run = async (client, message, args, level) => {
 			msg.edit('Site not found');
 		} else if (siteData.statusCode && siteData.statusCode > 404) {
 			msg.edit('Server Error, unable to contact the Gnosis data stores');
-		} else if (request[0].toLowerCase() === `gen` || 'gb') {
+		} else if (request[0].toLowerCase() === `gen` || request[0].toLowerCase() === 'gb') {
+			console.log(request[0]);
 			msg.edit('This site type isn\'t supported yet');
 		} else {
 			let siteImage = await client.siteImages();
