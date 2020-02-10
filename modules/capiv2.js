@@ -169,6 +169,7 @@ module.exports = client => {
 		try {
 			const response = await fetch_retry(5, siteUrl, {});
 			const count = await response.text();
+			delay(250);
 			return Number(count);
 		} catch (error) {
 			client.logger.error('Fetch Error: ' + error);

@@ -1,7 +1,20 @@
-const moment = require('moment');
+const Discord = require('discord.js');
+const delay = ms => new Promise(res => setTimeout(res, ms));
 
 exports.run = async (client, message, args, level) => {
 	// eslint-disable-line no-unused-vars
+
+	let embedData = {
+		title: '= Canonn Site Counts =',
+		color: 14323987,
+		footer: {
+			icon_url: 'https://api.canonn.tech/uploads/40bfc7d870e54925ad0f769e7b0b1f9a.png',
+			text: 'Provided by Canonn R&D - (canonn.science)',
+		},
+		fields: [],
+	};
+
+	let discordEmbed = new Discord.RichEmbed(embedData);
 
 	let counts = {
 		ap: {},
@@ -38,30 +51,32 @@ exports.run = async (client, message, args, level) => {
 			siteTotal = siteTotal + counts[countKeys[i]].total;
 		}
 
-		msg.edit(
-			`= All Site Counts =
+		embedData.fields.push({
+			name: '-- **Total Sites by Type** --',
+			value: `**AP**: ${counts.ap.total} 
+			**BM**: ${counts.bm.total}
+			**BT**: ${counts.bt.total}
+			**CS**: ${counts.cs.total}
+			**FG**: ${counts.fg.total}
+			**FM**: ${counts.fm.total}
+			**GEN**: ${counts.gen.total}
+			**GB**: ${counts.gb.total}
+			**GR**: ${counts.gr.total}
+			**GS**: ${counts.gs.total}
+			**GV**: ${counts.gv.total}
+			**GY**: ${counts.gy.total} 
+			**LS**: ${counts.ls.total} 
+			**TB**: ${counts.tb.total}  
+			**TS**: ${counts.ts.total}
+			**TW**: ${counts.tw.total}`,
+			inline: false,
+		}, {
+			name: '-- **Total Sites** --',
+			value: `**Total**: ${siteTotal}`,
+			inline: false,
+		});
 
-• AP  :: ${counts.ap.total} 
-• BM  :: ${counts.bm.total}
-• BT  :: ${counts.bt.total}
-• CS  :: ${counts.cs.total}
-• FG  :: ${counts.fg.total}
-• FM  :: ${counts.fm.total}
-• GEN :: ${counts.gen.total}
-• GB  :: ${counts.gb.total}
-• GR  :: ${counts.gr.total}
-• GS  :: ${counts.gs.total}
-• GV  :: ${counts.gv.total}
-• GY  :: ${counts.gy.total} 
-• LS  :: ${counts.ls.total} 
-• TB  :: ${counts.tb.total}  
-• TS  :: ${counts.ts.total}
-• TW  :: ${counts.tw.total}
-
-Total Sites: ${siteTotal}
-    `,
-			{ code: 'asciidoc' }
-		);
+		msg.edit(discordEmbed);
 	}
 };
 

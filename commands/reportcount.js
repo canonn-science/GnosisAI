@@ -165,11 +165,14 @@ exports.run = async (client, message, args, level) => {
 			}
 
 		embedData.fields.push({
-			name: '-- **Total Reports** --',
-			value: `**Total**: ${totalCount}
-			**Pending**: ${pendingCount}
+			name: '-- **Total Reports by Status** --',
+			value: `**Pending**: ${pendingCount}
 			**Accepted**: ${acceptedCount}
 			**Issue**: ${issueCount}`,
+			inline: false,
+		}, {
+			name: '-- **Total Reports** --',
+			value: `**Total**: ${totalCount}`,
 			inline: false,
 		});
 
