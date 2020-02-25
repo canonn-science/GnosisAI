@@ -26,9 +26,6 @@ fetch_retry = async (retryCount, url, options = {}) => {
 // Additonal types for siteTypes
 additionalTypes = {
 	gen: 'Generation Ship',
-	gb: 'Guardian Beacon',
-	gr: 'Guardian Ruin',
-	gs: 'Guardian Structure',
 	ts: 'Thargoid Structure',
 };
 
@@ -52,6 +49,8 @@ module.exports = client => {
 			tb: 'https://api.canonn.tech/uploads/71132d2b3056491cb984aa1fd318c27d.png',
 			ts: 'https://api.canonn.tech/uploads/3f7d82d00c044c6f9953c7ab572ece60.png',
 			tw: '',
+			canonn: 'https://api.canonn.tech/uploads/40bfc7d870e54925ad0f769e7b0b1f9a.png',
+			canonnGif: 'https://cdn.discordapp.com/icons/146714487695605760/a_5ae000cb1d630e2d4d177ae182c99119.gif'
 		};
 		return links;
 	};
@@ -65,6 +64,9 @@ module.exports = client => {
 			cs: 'Crystalline Shard',
 			fg: 'Fungal Gourd',
 			fm: 'Fumarole',
+			gb: 'Guardian Beacon',
+			gr: 'Guardian Ruin',
+			gs: 'Guardian Structure',
 			gv: 'Gas Vent',
 			gy: 'Geyser',
 			ls: 'Lava Spout',
@@ -104,7 +106,7 @@ module.exports = client => {
 	// Get counts of sites and reports
 	client.capiGetCounts = async () => {
 		try {
-			const response = await fetch_retry(5, url + `/totalcount`, {});
+			const response = await fetch_retry(5, 'https://api.canonn.tech:2053' + `/totalcount`, {});
 			return await response.json();
 		} catch (error) {
 			client.logger.error('Fetch Error: ' + error);
