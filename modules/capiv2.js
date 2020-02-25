@@ -101,6 +101,17 @@ module.exports = client => {
 		}
 	};
 
+	// Get counts of sites and reports
+	client.capiGetCounts = async () => {
+		try {
+			const response = await fetch_retry(5, url + `/totalcount`, {});
+			return await response.json();
+		} catch (error) {
+			client.logger.error('Fetch Error: ' + error);
+			console.log(error);
+		}
+	};
+
 	// Get a single report
 	client.capiGetReport = async (reportType, reportID) => {
 		try {
@@ -111,29 +122,6 @@ module.exports = client => {
 			client.logger.error('Fetch Error: ' + error);
 			console.log(error);
 		}
-	};
-
-	// Get a count of reports based on reportStatus
-	client.capiGetReportCount = async (reportType, reportStatus = null) => {
-		var reportUrl;
-		if (reportStatus === 'total') {
-			reportUrl = url + `/${reportType}reports/count`;
-		} else {
-			reportUrl = url + `/${reportType}reports/count?reportStatus=` + encodeURIComponent(reportStatus);
-		}
-
-		try {
-			const response = await fetch_retry(5, reportUrl, {});
-			const count = await response.text();
-			return await Number(count);
-		} catch (error) {
-			client.logger.error('Fetch Error: ' + error);
-			console.log(error);
-		}
-	};
-
-	client.getTypes = async siteType => {
-		// Get all types for a site type
 	};
 
 	// Get a single site
@@ -148,29 +136,9 @@ module.exports = client => {
 		try {
 			const response = await fetch_retry(5, siteUrl, {});
 			const json = await response.json();
-			if (!json[0].discoveredBy) {json[0].discoveredBy = {cmdrName: 'Unknown'}};
-			if (!json[0].frontierID) {json[0].frontierID = 'Unknown'};
+			if (!json[0].discoveredBy) { json[0].discoveredBy = { cmdrName: 'Unknown' } };
+			if (!json[0].frontierID) { json[0].frontierID = 'Unknown' };
 			return json;
-		} catch (error) {
-			client.logger.error('Fetch Error: ' + error);
-			console.log(error);
-		}
-	};
-
-	// Get a count of sites based on types
-	client.capiGetSiteCount = async (siteType, type = null) => {
-		var siteUrl;
-		if (type === 'all') {
-			siteUrl = url + `/${siteType}sites/count`;
-		} else {
-			siteUrl = url + `/${siteType}sites/count?type.type=` + encodeURIComponent(type);
-		}
-
-		try {
-			const response = await fetch_retry(5, siteUrl, {});
-			const count = await response.text();
-			delay(250);
-			return Number(count);
 		} catch (error) {
 			client.logger.error('Fetch Error: ' + error);
 			console.log(error);
