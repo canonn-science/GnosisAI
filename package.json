@@ -1,7 +1,7 @@
 {
   "name": "gnosisai",
   "private": false,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A Discord bot built to interface with the Canonn API",
   "main": "index.js",
   "scripts": {
