@@ -26,9 +26,6 @@ fetch_retry = async (retryCount, url, options = {}) => {
 // Additonal types for siteTypes
 additionalTypes = {
 	gen: 'Generation Ship',
-	gb: 'Guardian Beacon',
-	gr: 'Guardian Ruin',
-	gs: 'Guardian Structure',
 	ts: 'Thargoid Structure',
 };
 
@@ -52,6 +49,8 @@ module.exports = client => {
 			tb: 'https://api.canonn.tech/uploads/71132d2b3056491cb984aa1fd318c27d.png',
 			ts: 'https://api.canonn.tech/uploads/3f7d82d00c044c6f9953c7ab572ece60.png',
 			tw: '',
+			canonn: 'https://api.canonn.tech/uploads/40bfc7d870e54925ad0f769e7b0b1f9a.png',
+			canonnGif: 'https://cdn.discordapp.com/icons/146714487695605760/a_5ae000cb1d630e2d4d177ae182c99119.gif'
 		};
 		return links;
 	};
@@ -65,6 +64,9 @@ module.exports = client => {
 			cs: 'Crystalline Shard',
 			fg: 'Fungal Gourd',
 			fm: 'Fumarole',
+			gb: 'Guardian Beacon',
+			gr: 'Guardian Ruin',
+			gs: 'Guardian Structure',
 			gv: 'Gas Vent',
 			gy: 'Geyser',
 			ls: 'Lava Spout',
@@ -101,6 +103,17 @@ module.exports = client => {
 		}
 	};
 
+	// Get counts of sites and reports
+	client.capiGetCounts = async () => {
+		try {
+			const response = await fetch_retry(5, url + `/totalcount`, {});
+			return await response.json();
+		} catch (error) {
+			client.logger.error('Fetch Error: ' + error);
+			console.log(error);
+		}
+	};
+
 	// Get a single report
 	client.capiGetReport = async (reportType, reportID) => {
 		try {
@@ -111,29 +124,6 @@ module.exports = client => {
 			client.logger.error('Fetch Error: ' + error);
 			console.log(error);
 		}
-	};
-
-	// Get a count of reports based on reportStatus
-	client.capiGetReportCount = async (reportType, reportStatus = null) => {
-		var reportUrl;
-		if (reportStatus === 'total') {
-			reportUrl = url + `/${reportType}reports/count`;
-		} else {
-			reportUrl = url + `/${reportType}reports/count?reportStatus=` + encodeURIComponent(reportStatus);
-		}
-
-		try {
-			const response = await fetch_retry(5, reportUrl, {});
-			const count = await response.text();
-			return await Number(count);
-		} catch (error) {
-			client.logger.error('Fetch Error: ' + error);
-			console.log(error);
-		}
-	};
-
-	client.getTypes = async siteType => {
-		// Get all types for a site type
 	};
 
 	// Get a single site
@@ -148,29 +138,9 @@ module.exports = client => {
 		try {
 			const response = await fetch_retry(5, siteUrl, {});
 			const json = await response.json();
-			if (!json[0].discoveredBy) {json[0].discoveredBy = {cmdrName: 'Unknown'}};
-			if (!json[0].frontierID) {json[0].frontierID = 'Unknown'};
+			if (!json[0].discoveredBy) { json[0].discoveredBy = { cmdrName: 'Unknown' } };
+			if (!json[0].frontierID) { json[0].frontierID = 'Unknown' };
 			return json;
-		} catch (error) {
-			client.logger.error('Fetch Error: ' + error);
-			console.log(error);
-		}
-	};
-
-	// Get a count of sites based on types
-	client.capiGetSiteCount = async (siteType, type = null) => {
-		var siteUrl;
-		if (type === 'all') {
-			siteUrl = url + `/${siteType}sites/count`;
-		} else {
-			siteUrl = url + `/${siteType}sites/count?type.type=` + encodeURIComponent(type);
-		}
-
-		try {
-			const response = await fetch_retry(5, siteUrl, {});
-			const count = await response.text();
-			delay(250);
-			return Number(count);
 		} catch (error) {
 			client.logger.error('Fetch Error: ' + error);
 			console.log(error);
@@ -180,4 +150,18 @@ module.exports = client => {
 	client.capiGetCmdrCount = async () => {
 		// Get a count of all CMDRs
 	};
+
+
+	client.object2string = (obj) => {
+		let string = '';
+
+		function toTitleCase(str) {
+			return str.toLowerCase().replace(/\.\s*([a-z])|^[a-z]/gm, s => s.toUpperCase());
+		}
+
+		Object.keys(obj).forEach(key => {
+			string += `**${toTitleCase(key)}**: ${obj[key]}\n`;
+		});
+		return string;
+	}
 };
