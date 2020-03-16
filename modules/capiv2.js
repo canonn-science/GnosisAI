@@ -106,7 +106,7 @@ module.exports = client => {
 	// Get counts of sites and reports
 	client.capiGetCounts = async () => {
 		try {
-			const response = await fetch_retry(5, 'https://api.canonn.tech:2053' + `/totalcount`, {});
+			const response = await fetch_retry(5, url + `/totalcount`, {});
 			return await response.json();
 		} catch (error) {
 			client.logger.error('Fetch Error: ' + error);
@@ -150,4 +150,18 @@ module.exports = client => {
 	client.capiGetCmdrCount = async () => {
 		// Get a count of all CMDRs
 	};
+
+
+	client.object2string = (obj) => {
+		let string = '';
+
+		function toTitleCase(str) {
+			return str.toLowerCase().replace(/\.\s*([a-z])|^[a-z]/gm, s => s.toUpperCase());
+		}
+
+		Object.keys(obj).forEach(key => {
+			string += `**${toTitleCase(key)}**: ${obj[key]}\n`;
+		});
+		return string;
+	}
 };

@@ -1,13 +1,9 @@
 const Discord = require('discord.js');
-const delay = ms => new Promise(res => setTimeout(res, ms));
 
 exports.run = async (client, message, args, level) => {
 	// Define count object for data
 	let counts = await client.capiGetCounts();
 	let dataKeys = Object.keys(counts.data)
-
-	// Grab Report Status array
-	let reportStatuses = client.reportStatus();
 
 	// Grab Report Types Object and map keys
 	let reportTypes = client.reportTypes();
@@ -29,25 +25,12 @@ exports.run = async (client, message, args, level) => {
 
 	let discordEmbed = new Discord.RichEmbed(embedData);
 
-	function object2string(obj) {
-		let string = '';
-
-		function toTitleCase(str) {
-			return str.toLowerCase().replace(/\.\s*([a-z])|^[a-z]/gm, s => s.toUpperCase());
-		}
-
-		Object.keys(obj).forEach(key => {
-			string += `**${toTitleCase(key)}**: ${obj[key]}\n`;
-		});
-		return string;
-	}
-
 	if (args.length === 0) {
 		const msg = await message.channel.send('Getting counts of all reports with all statuses...');
 
 		embedData.fields.push({
 			name: '-- **Total Reports** --',
-			value: object2string(counts.total.reports),
+			value: client.object2string(counts.total.reports),
 			inline: false,
 		});
 
@@ -56,7 +39,7 @@ exports.run = async (client, message, args, level) => {
 				let currentData = counts.data[dataKeys[i]]
 				embedData.fields.push({
 					name: `-- **(${dataKeys[i].toUpperCase()})** - ${reportTypes[dataKeys[i].toLowerCase()]} Reports --`,
-					value: object2string(currentData.reports),
+					value: client.object2string(currentData.reports),
 					inline: false,
 				});
 			}
@@ -70,7 +53,7 @@ exports.run = async (client, message, args, level) => {
 
 		embedData.fields.push({
 			name: `-- (${args[0].toUpperCase()}) - ${reportTypes[args[0].toLowerCase()]} Reports --`,
-			value: object2string(currentData.reports),
+			value: client.object2string(currentData.reports),
 			inline: false,
 		});
 
@@ -88,7 +71,7 @@ exports.run = async (client, message, args, level) => {
 
 		embedData.fields.push({
 			name: '-- **Total Reports** --',
-			value: object2string(counts.total.reports),
+			value: client.object2string(counts.total.reports),
 			inline: false,
 		});
 
